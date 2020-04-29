@@ -354,7 +354,7 @@ def apply_heu_dfg(
         start_activities=start_activities,
         end_activities=end_activities,
         dfg_window_2=dfg_window_2,
-        dfg_performance=dfg_performance,
+        performance_dfg=dfg_performance,
         freq_triples=freq_triples,
     )
     heu_net.calculate(
