@@ -238,7 +238,9 @@ def apply_heu(log, parameters=None):
         if constants.PARAMETER_CONSTANT_ACTIVITY_KEY in parameters
         else xes.DEFAULT_NAME_KEY
     )
-
+    
+    use_performance = parameters["use_performance"]
+    
     start_activities = log_sa_filter.get_start_activities(
         log, parameters=parameters
     )
@@ -256,9 +258,12 @@ def apply_heu(log, parameters=None):
     freq_triples = dfg_factory.apply(
         log, parameters=parameters, variant="freq_triples"
     )
-    dfg_performance = dfg_factory.apply(
-        log, parameters=parameters, variant="performance"
-    )
+    
+    dfg_performance = None
+    if use_performance:
+        dfg_performance = dfg_factory.apply(
+            log, parameters=parameters, variant="performance"
+        )
 
     return apply_heu_dfg(
         dfg,
