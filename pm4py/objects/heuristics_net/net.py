@@ -142,7 +142,6 @@ class HeuristicsNet:
             act2 = el[1]
             value = self.dfg[el]
             perf_value = self.performance_dfg[el] if self.performance_dfg is not None else self.dfg[el]
-            print(self.performance_std_dfg)
             perf_value_std = self.performance_std_dfg[el] if self.performance_std_dfg is not None else None
             if act1 not in self.dependency_matrix:
                 self.dependency_matrix[act1] = {}

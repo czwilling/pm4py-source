@@ -260,7 +260,7 @@ def apply_heu(log, parameters=None):
     )
     
     dfg_performance = None
-    dfg_performance_std = None,
+    dfg_performance_std = None
     if use_performance:
         dfg_performance = dfg_factory.apply(
             log, parameters=parameters, variant="performance"

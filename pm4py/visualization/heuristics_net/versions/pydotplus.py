@@ -160,8 +160,7 @@ def apply(heu_net, parameters=None):
                             label = human_readable_stat(repr_value)
                             if repr_value_std is not None:
                                 label = label + " ± " + human_readable_stat(repr_value_std)
-                            label = f"{edge.net_name} ( {label} )"
-                            print(label)
+                            label = f"{edge.net_name} {label}"
                             e = pydotplus.Edge(src=corr_nodes[node], dst=corr_nodes[other_node],
                                                label=label,
                                                color=edge.repr_color,
@@ -176,7 +175,7 @@ def apply(heu_net, parameters=None):
                             if repr_value_std is not None:
                                 label = label + " ± " + human_readable_stat(repr_value_std),
                             label = f"{label}"
-                            print(label)
+                            label = label.strip("(),'")
                             e = pydotplus.Edge(src=corr_nodes[node], dst=corr_nodes[other_node],
                                                label=label,
                                                color=edge.repr_color,
