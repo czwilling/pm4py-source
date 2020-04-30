@@ -43,7 +43,7 @@ class Node:
         self.net_name = net_name
         self.nodes_dictionary = nodes_dictionary
 
-    def add_output_connection(self, other_node, dependency_value, dfg_value, repr_color=None, repr_value=None):
+    def add_output_connection(self, other_node, dependency_value, dfg_value, repr_color=None, repr_value=None, repr_value_std=None):
         """
         Adds an output connection to another node
 
@@ -64,13 +64,12 @@ class Node:
             repr_color = self.default_edges_color
         if repr_value is None:
             repr_value = dfg_value
-        edge = Edge(self, other_node, dependency_value, dfg_value, repr_value, repr_color=repr_color,
-                    edge_type=self.node_type, net_name=self.net_name)
+        edge = Edge(self, other_node, dependency_value, dfg_value, repr_value, repr_value_std=repr_value_std, repr_color=repr_color, edge_type=self.node_type, net_name=self.net_name)
         if other_node not in self.output_connections:
             self.output_connections[other_node] = []
         self.output_connections[other_node].append(edge)
 
-    def add_input_connection(self, other_node, dependency_value, dfg_value, repr_color=None, repr_value=None):
+    def add_input_connection(self, other_node, dependency_value, dfg_value, repr_color=None, repr_value=None, repr_value_std=None):
         """
         Adds an input connection to another node
 
@@ -91,8 +90,7 @@ class Node:
             repr_color = self.default_edges_color
         if repr_value is None:
             repr_value = dfg_value
-        edge = Edge(self, other_node, dependency_value, dfg_value, repr_value, repr_color=repr_color,
-                    edge_type=self.node_type, net_name=self.net_name)
+        edge = Edge(self, other_node, dependency_value, dfg_value, repr_value, repr_value_std=repr_value_std, repr_color=repr_color, edge_type=self.node_type, net_name=self.net_name)
         if other_node not in self.input_connections:
             self.input_connections[other_node] = []
         self.input_connections[other_node].append(edge)

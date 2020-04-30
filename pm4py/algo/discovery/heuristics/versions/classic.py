@@ -260,9 +260,15 @@ def apply_heu(log, parameters=None):
     )
     
     dfg_performance = None
+    dfg_performance_std = None,
     if use_performance:
         dfg_performance = dfg_factory.apply(
             log, parameters=parameters, variant="performance"
+        )
+        parameters_std = parameters.copy()
+        parameters_std["aggregationMeasure"] = "stdev"
+        dfg_performance_std = dfg_factory.apply(
+            log, parameters=parameters_std, variant="performance"
         )
 
     return apply_heu_dfg(
@@ -274,6 +280,7 @@ def apply_heu(log, parameters=None):
         dfg_window_2=dfg_window_2,
         freq_triples=freq_triples,
         dfg_performance=dfg_performance,
+        dfg_performance_std=dfg_performance_std,
         parameters=parameters,
     )
 
@@ -286,6 +293,7 @@ def apply_heu_dfg(
     end_activities=None,
     dfg_window_2=None,
     dfg_performance=None,
+    dfg_performance_std=None,
     freq_triples=None,
     parameters=None,
 ):
@@ -352,6 +360,7 @@ def apply_heu_dfg(
         if defaults.LOOP_LENGTH_TWO_THRESH in parameters
         else defaults.DEFAULT_LOOP_LENGTH_TWO_THRESH
     )
+    
     heu_net = HeuristicsNet(
         dfg,
         activities=activities,
@@ -360,6 +369,7 @@ def apply_heu_dfg(
         end_activities=end_activities,
         dfg_window_2=dfg_window_2,
         performance_dfg=dfg_performance,
+        performance_std_dfg=dfg_performance_std,
         freq_triples=freq_triples,
     )
     heu_net.calculate(

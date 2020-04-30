@@ -149,6 +149,7 @@ def apply(heu_net, parameters=None):
                 for edge in node.output_connections[other_node]:
                     this_pen_width = 1.0 + math.log(1 + edge.repr_value) / 11.0
                     repr_value = str(edge.repr_value)
+                    repr_value_std = edge.repr_value_std
                     if edge.net_name:
                         if node.node_type == "frequency":
                             e = pydotplus.Edge(src=corr_nodes[node], dst=corr_nodes[other_node],
@@ -156,8 +157,13 @@ def apply(heu_net, parameters=None):
                                                color=edge.repr_color,
                                                fontcolor=edge.repr_color, penwidth=this_pen_width)
                         else:
+                            label = human_readable_stat(repr_value)
+                            if repr_value_std is not None:
+                                label = label + " ± " + human_readable_stat(repr_value_std)
+                            label = f"{edge.net_name} ( {label} )"
+                            print(label)
                             e = pydotplus.Edge(src=corr_nodes[node], dst=corr_nodes[other_node],
-                                               label=edge.net_name + " (" + human_readable_stat(repr_value) + ")",
+                                               label=label,
                                                color=edge.repr_color,
                                                fontcolor=edge.repr_color, penwidth=this_pen_width)
                     else:
@@ -166,8 +172,13 @@ def apply(heu_net, parameters=None):
                                                color=edge.repr_color,
                                                fontcolor=edge.repr_color, penwidth=this_pen_width)
                         else:
+                            label = human_readable_stat(repr_value)
+                            if repr_value_std is not None:
+                                label = label + " ± " + human_readable_stat(repr_value_std),
+                            label = f"{label}"
+                            print(label)
                             e = pydotplus.Edge(src=corr_nodes[node], dst=corr_nodes[other_node],
-                                               label=human_readable_stat(repr_value),
+                                               label=label,
                                                color=edge.repr_color,
                                                fontcolor=edge.repr_color, penwidth=this_pen_width)
 

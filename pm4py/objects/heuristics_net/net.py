@@ -11,7 +11,7 @@ DEFAULT_NET_NAME = ""
 class HeuristicsNet:
     def __init__(self, frequency_dfg, activities=None, start_activities=None, end_activities=None,
                  activities_occurrences=None,
-                 default_edges_color="#000000", performance_dfg=None, dfg_window_2=None, freq_triples=None,
+                 default_edges_color="#000000", performance_dfg=None, performance_std_dfg=None, dfg_window_2=None, freq_triples=None,
                  net_name=DEFAULT_NET_NAME):
         """
         Initialize an Hueristics Net
@@ -56,6 +56,7 @@ class HeuristicsNet:
 
         self.dfg = frequency_dfg
         self.performance_dfg = performance_dfg
+        self.performance_std_dfg = performance_std_dfg
         self.node_type = "frequency" if self.performance_dfg is None else "performance"
 
         self.activities = activities
@@ -113,6 +114,7 @@ class HeuristicsNet:
         self.dfg_matrix = {}
         self.performance_matrix = None
         self.performance_matrix = {}
+        self.performance_matrix_std = {}
         if dfg_pre_cleaning_noise_thresh > 0.0:
             self.dfg = clean_dfg_based_on_noise_thresh(self.dfg, self.activities, dfg_pre_cleaning_noise_thresh,
                                                        parameters=parameters)
@@ -140,12 +142,16 @@ class HeuristicsNet:
             act2 = el[1]
             value = self.dfg[el]
             perf_value = self.performance_dfg[el] if self.performance_dfg is not None else self.dfg[el]
+            print(self.performance_std_dfg)
+            perf_value_std = self.performance_std_dfg[el] if self.performance_std_dfg is not None else None
             if act1 not in self.dependency_matrix:
                 self.dependency_matrix[act1] = {}
                 self.dfg_matrix[act1] = {}
                 self.performance_matrix[act1] = {}
+                self.performance_matrix_std[act1] = {}
             self.dfg_matrix[act1][act2] = value
             self.performance_matrix[act1][act2] = perf_value
+            self.performance_matrix_std[act1][act2] = perf_value_std
             if not act1 == act2:
                 inv_couple = (act2, act1)
                 c1 = value
@@ -181,10 +187,15 @@ class HeuristicsNet:
                                               nodes_dictionary=self.nodes)
 
                     repr_value = self.performance_matrix[n1][n2]
-                    self.nodes[n1].add_output_connection(self.nodes[n2], self.dependency_matrix[n1][n2],
-                                                         self.dfg_matrix[n1][n2], repr_value=repr_value)
-                    self.nodes[n2].add_input_connection(self.nodes[n1], self.dependency_matrix[n1][n2],
-                                                        self.dfg_matrix[n1][n2], repr_value=repr_value)
+                    repr_value_std = self.performance_matrix_std[n1][n2]
+                    self.nodes[n1].add_output_connection(
+                        self.nodes[n2], self.dependency_matrix[n1][n2], self.dfg_matrix[n1][n2], repr_value=repr_value, 
+                        repr_value_std=repr_value_std
+                    )
+                    self.nodes[n2].add_input_connection(
+                        self.nodes[n1], self.dependency_matrix[n1][n2], self.dfg_matrix[n1][n2], repr_value=repr_value,
+                        repr_value_std=repr_value_std
+                    )
         for node in self.nodes:
             self.nodes[node].calculate_and_measure_out(and_measure_thresh=and_measure_thresh)
             self.nodes[node].calculate_and_measure_in(and_measure_thresh=and_measure_thresh)
@@ -216,17 +227,17 @@ class HeuristicsNet:
                             repr_value = self.performance_matrix[n1][n2] if n1 in self.performance_matrix and n2 in self.performance_matrix[n1] else 0
                             added_loops.add((n1, n2))
                             self.nodes[n1].add_output_connection(self.nodes[n2], 0,
-                                                                 v_n1_n2, repr_value=repr_value)
+                                                                 v_n1_n2, repr_value=repr_value, repr_value_std=repr_value_std)
                             self.nodes[n2].add_input_connection(self.nodes[n1], 0,
-                                                                v_n2_n1, repr_value=repr_value)
+                                                                v_n2_n1, repr_value=repr_value, repr_value_std=repr_value_std)
 
                         if (n2, n1) not in added_loops:
                             repr_value = self.performance_matrix[n2][n1] if n2 in self.performance_matrix and n1 in self.performance_matrix[n2] else 0
                             added_loops.add((n2, n1))
                             self.nodes[n2].add_output_connection(self.nodes[n1], 0,
-                                                                 v_n2_n1, repr_value=repr_value)
+                                                                 v_n2_n1, repr_value=repr_value, repr_value_std=repr_value_std)
                             self.nodes[n1].add_input_connection(self.nodes[n2], 0,
-                                                                v_n1_n2, repr_value=repr_value)
+                                                                v_n1_n2, repr_value=repr_value, repr_value_std=repr_value_std)
         if len(self.nodes) == 0:
             for act in self.activities:
                 self.nodes[act] = Node(self, act, self.activities_occurrences[act],

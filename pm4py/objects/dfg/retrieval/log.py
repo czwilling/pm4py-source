@@ -114,7 +114,10 @@ def performance(log, parameters=None):
         elif aggregation_measure == "max":
             ret[key] = max(ret0[key])
         elif aggregation_measure == "stdev":
-            ret[key] = stdev(ret0[key])
+            if len(ret0[key]) < 2:
+                ret[key] = 0 # maybe nan
+            else:
+                ret[key] = stdev(ret0[key])
         elif aggregation_measure == "sum":
             ret[key] = sum(ret0[key])
         else:
